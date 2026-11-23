@@ -243,7 +243,10 @@ export default function ProductDetailScreen() {
           </ScrollView>
 
           {/* Sticky bottom action bar */}
-          <View className="flex-row items-center gap-3 border-t border-line bg-surface px-4 py-3">
+          <SafeAreaView
+            edges={["bottom"]}
+            className="flex-row items-center gap-3 border-t border-line bg-surface px-4 py-3"
+          >
             <View className="flex-row items-center rounded-full border border-line bg-field px-2 py-1">
               <Pressable
                 onPress={() => setQty((q) => Math.max(1, q - 1))}
@@ -279,7 +282,7 @@ export default function ProductDetailScreen() {
                 disabled={!canOrder}
               />
             </View>
-          </View>
+          </SafeAreaView>
         </>
       )}
     </SafeAreaView>
