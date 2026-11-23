@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "WargaBite",
+    "slug": "wargabite",
+    "scheme": "wargabite",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#EA580C"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "WargaBite membutuhkan kamera untuk scan QR serah terima pesanan dan foto menu.",
+        "NSLocationWhenInUseUsageDescription": "WargaBite membutuhkan lokasi GPS untuk menandai titik rumah atau komplek."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#EA580C",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "CAMERA",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Izinkan WargaBite menggunakan kamera untuk scan QR pesanan dan foto menu."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Izinkan WargaBite mengakses lokasi untuk menandai titik rumah atau komplek."
+        }
+      ],
+      "expo-notifications"
+    ]
+  }
+}
