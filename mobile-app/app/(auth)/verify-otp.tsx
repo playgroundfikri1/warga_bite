@@ -12,7 +12,6 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MailCheck } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
 import { PrimaryButton } from "../../components/Buttons";
 import { resendSignupOtp, verifySignupOtp } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
@@ -83,23 +82,26 @@ export default function VerifyOtpScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
-      <AppHeader
-        title="Verifikasi OTP Email"
-        subtitle="Langkah Terakhir"
-        onBack={() => router.back()}
-      />
-
+    <SafeAreaView className="flex-1 bg-canvas" edges={["bottom"]}>
       <KeyboardAvoidingView
         className="flex-1 bg-canvas"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 32 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 32 }}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-        <View className="items-center rounded-3xl border border-line bg-surface p-6 shadow-sm">
+        <View
+          style={{
+            elevation: 2,
+            shadowColor: "#0F172A",
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 2 },
+          }}
+          className="items-center rounded-3xl bg-white p-6"
+        >
           <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-chip-peach">
             <MailCheck size={30} color="#A63A00" />
           </View>
@@ -119,7 +121,7 @@ export default function VerifyOtpScreen() {
               placeholder="Alamat email"
               autoCapitalize="none"
               keyboardType="email-address"
-              className="mt-4 w-full rounded-2xl bg-field px-4 py-3 text-sm text-ink"
+              className="mt-4 h-12 w-full rounded-2xl bg-field px-4 text-sm text-ink"
             />
           )}
 
@@ -130,7 +132,7 @@ export default function VerifyOtpScreen() {
             placeholderTextColor="#94A3B8"
             keyboardType="number-pad"
             maxLength={6}
-            className="mt-5 w-full rounded-2xl bg-field py-4 text-center text-2xl font-extrabold tracking-[10px] text-ink"
+            className="mt-5 h-14 w-full rounded-2xl bg-field py-3 text-center text-2xl font-extrabold tracking-[10px] text-ink"
           />
 
           <PrimaryButton

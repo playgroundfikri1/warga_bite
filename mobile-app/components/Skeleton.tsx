@@ -57,7 +57,7 @@ export function CatalogSkeleton() {
           {[0, 1].map((col) => (
             <View
               key={col}
-              className="flex-1 overflow-hidden rounded-2xl border border-line bg-surface"
+              className="flex-1 overflow-hidden rounded-2xl bg-white shadow-sm"
             >
               <SkeletonBox className="h-32 w-full rounded-none" />
               <View className="gap-2 p-3">
@@ -85,7 +85,7 @@ export function ListCardSkeleton({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, idx) => (
         <View
           key={idx}
-          className="gap-2 rounded-2xl border border-line bg-surface p-4"
+          className="gap-2 rounded-2xl bg-white p-4 shadow-sm"
         >
           <View className="flex-row items-center justify-between">
             <SkeletonBox className="h-4 w-1/2" />
@@ -107,13 +107,13 @@ export function ProductDetailSkeleton() {
     <View className="flex-1 bg-canvas">
       <SkeletonBox className="h-64 w-full rounded-none" />
       <View className="gap-4 p-4">
-        <View className="gap-2 rounded-2xl border border-line bg-surface p-4">
+        <View className="gap-2 rounded-2xl bg-white p-4 shadow-sm">
           <SkeletonBox className="h-5 w-3/4" />
           <SkeletonBox className="h-6 w-1/3" />
           <SkeletonBox className="mt-2 h-3 w-full" />
           <SkeletonBox className="h-3 w-4/5" />
         </View>
-        <View className="gap-2 rounded-2xl border border-line bg-surface p-4">
+        <View className="gap-2 rounded-2xl bg-white p-4 shadow-sm">
           <SkeletonBox className="h-4 w-1/2" />
           <SkeletonBox className="h-3 w-2/3" />
         </View>

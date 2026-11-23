@@ -1,16 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  Text,
-  View,
-} from "react-native";
+import { Alert, FlatList, RefreshControl, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeftRight, Building2, Plus } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
+import { Building2, Plus } from "lucide-react-native";
 import { PrimaryButton } from "../../components/Buttons";
 import { SearchBar } from "../../components/SearchBar";
 import { SectionCard } from "../../components/SectionCard";
@@ -18,12 +10,10 @@ import { ListCardSkeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
 import { listComplexes } from "../../lib/api";
 import { hapticLight } from "../../lib/haptics";
-import { useAppStore } from "../../store/useAppStore";
 import type { Complex } from "../../types/database";
 
 export default function AdminComplexesScreen() {
   const router = useRouter();
-  const setActiveRole = useAppStore((s) => s.setActiveRole);
 
   const [complexes, setComplexes] = useState<Complex[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,27 +44,7 @@ export default function AdminComplexesScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <AppHeader
-        title="Kelola Komplek"
-        subtitle="Mode Admin Komplek"
-        showLogo
-        rightSlot={
-          <Pressable
-            onPress={() => {
-              hapticLight();
-              setActiveRole("customer");
-              router.replace("/(customer)");
-            }}
-            android_ripple={{ color: "rgba(166,58,0,0.12)" }}
-            className="flex-row items-center gap-1.5 overflow-hidden rounded-full bg-field px-3 py-2 active:scale-95"
-          >
-            <ArrowLeftRight size={14} color="#A63A00" />
-            <Text className="text-xs font-bold text-cta">Mode Warga</Text>
-          </Pressable>
-        }
-      />
-
+    <SafeAreaView className="flex-1 bg-canvas" edges={["bottom"]}>
       <View className="flex-1 bg-canvas p-4">
         <View className="mb-3 gap-3">
           <SearchBar

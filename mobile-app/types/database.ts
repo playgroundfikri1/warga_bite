@@ -123,6 +123,10 @@ export interface Order {
   order_status: OrderStatus;
   qr_handoff_token: string;
   delivery_notes: string | null;
+  food_photo_path: string | null;
+  house_photo_path: string | null;
+  delivered_at: string | null;
+  delivered_by: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -32,7 +32,14 @@ export function ProductCard({
         onPress();
       }}
       android_ripple={{ color: "rgba(234,88,12,0.1)" }}
-      className="flex-1 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm active:scale-[0.98] active:opacity-90"
+      style={{
+        elevation: 2,
+        shadowColor: "#0F172A",
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+      }}
+      className="flex-1 overflow-hidden rounded-2xl bg-white active:scale-95 active:opacity-90"
     >
       <View className="relative h-32 w-full bg-field">
         {item.image_url ? (

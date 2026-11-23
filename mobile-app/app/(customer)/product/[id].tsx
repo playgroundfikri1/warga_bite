@@ -20,7 +20,6 @@ import {
   Store,
   Utensils,
 } from "lucide-react-native";
-import { AppHeader } from "../../../components/AppHeader";
 import { PendingBanner } from "../../../components/Banners";
 import { PrimaryButton } from "../../../components/Buttons";
 import { SectionCard } from "../../../components/SectionCard";
@@ -111,13 +110,7 @@ export default function ProductDetailScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
-      <AppHeader
-        title="Detail Makanan"
-        subtitle={detail?.complex_name ?? "Komplek WargaBite"}
-        onBack={() => router.back()}
-      />
-
+    <View className="flex-1 bg-canvas">
       {loading ? (
         <ProductDetailSkeleton />
       ) : !detail ? (
@@ -247,9 +240,16 @@ export default function ProductDetailScreen() {
           {/* Sticky bottom action bar */}
           <SafeAreaView
             edges={["bottom"]}
-            className="flex-row items-center gap-3 border-t border-line bg-surface px-4 py-3"
+            style={{
+              elevation: 10,
+              shadowColor: "#0F172A",
+              shadowOpacity: 0.08,
+              shadowRadius: 10,
+              shadowOffset: { width: 0, height: -2 },
+            }}
+            className="flex-row items-center gap-3 bg-white px-4 py-3"
           >
-            <View className="flex-row items-center rounded-full border border-line bg-field px-2 py-1">
+            <View className="h-12 flex-row items-center rounded-full bg-field px-1.5">
               <Pressable
                 onPress={() => {
                   hapticLight();
@@ -257,9 +257,9 @@ export default function ProductDetailScreen() {
                 }}
                 disabled={!canOrder}
                 android_ripple={{ color: "rgba(30,41,59,0.12)", borderless: true }}
-                className="h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-surface active:scale-90"
+                className="h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white active:scale-95"
               >
-                <Minus size={15} color="#1E293B" />
+                <Minus size={16} color="#1E293B" />
               </Pressable>
               <Text className="w-8 text-center text-sm font-extrabold text-ink">
                 {qty}
@@ -271,9 +271,9 @@ export default function ProductDetailScreen() {
                 }}
                 disabled={!canOrder}
                 android_ripple={{ color: "rgba(30,41,59,0.12)", borderless: true }}
-                className="h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-surface active:scale-90"
+                className="h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white active:scale-95"
               >
-                <Plus size={15} color="#1E293B" />
+                <Plus size={16} color="#1E293B" />
               </Pressable>
             </View>
 
@@ -295,6 +295,6 @@ export default function ProductDetailScreen() {
           </SafeAreaView>
         </>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

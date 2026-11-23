@@ -17,7 +17,6 @@ import {
   Sparkles,
   UtensilsCrossed,
 } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
 import { PendingBanner } from "../../components/Banners";
 import { CategoryPill } from "../../components/CategoryPill";
 import { ProductCard } from "../../components/ProductCard";
@@ -212,8 +211,12 @@ export default function CustomerHomeScreen() {
 
   const renderFooter = () => (
     <Pressable
-      onPress={() => router.push("/(customer)/profile")}
-      className="mt-4 flex-row items-center gap-3 rounded-2xl border border-line bg-field p-4"
+      onPress={() => {
+        hapticLight();
+        router.push("/(customer)/profile");
+      }}
+      android_ripple={{ color: "rgba(6,95,70,0.1)" }}
+      className="mt-4 flex-row items-center gap-3 overflow-hidden rounded-2xl bg-field p-4 active:scale-95"
     >
       <View className="h-11 w-11 items-center justify-center rounded-full bg-chip-mint/60">
         <ChefHat size={22} color="#065F46" />
@@ -230,29 +233,7 @@ export default function CustomerHomeScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <AppHeader
-        title="Beranda"
-        subtitle={complex?.name ?? "Komplek WargaBite"}
-        showLogo
-        rightSlot={
-          <Pressable
-            onPress={() => router.push("/(customer)/orders")}
-            className="relative h-10 w-10 items-center justify-center rounded-full bg-field"
-          >
-            <ShoppingBag size={19} color="#1E293B" />
-            {cartCount > 0 && (
-              <View className="absolute -right-1 -top-1 h-5 min-w-5 items-center justify-center rounded-full bg-cta px-1">
-                <Text className="text-[10px] font-extrabold text-white">
-                  {cartCount}
-                </Text>
-              </View>
-            )}
-          </Pressable>
-        }
-      />
-
-      <View className="flex-1 bg-canvas">
+    <View className="flex-1 bg-canvas">
         {loading ? (
           <CatalogSkeleton />
         ) : (
@@ -279,7 +260,16 @@ export default function CustomerHomeScreen() {
               />
             }
             ListEmptyComponent={
-              <View className="items-center rounded-2xl border border-line bg-surface p-8">
+              <View
+                style={{
+                  elevation: 2,
+                  shadowColor: "#0F172A",
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 2 },
+                }}
+                className="items-center rounded-2xl bg-white p-8"
+              >
                 <UtensilsCrossed size={32} color="#94A3B8" />
                 <Text className="mt-3 text-sm font-bold text-ink">
                   Belum ada menu ditemukan
@@ -302,7 +292,6 @@ export default function CustomerHomeScreen() {
             )}
           />
         )}
-      </View>
-    </SafeAreaView>
+    </View>
   );
 }

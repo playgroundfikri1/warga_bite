@@ -3,51 +3,26 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  ArrowLeftRight,
   CreditCard,
   ShoppingBag,
   UtensilsCrossed,
   Wallet,
 } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
 import { SubscriptionBanner } from "../../components/Banners";
 import { SectionCard } from "../../components/SectionCard";
 import { StatusChip } from "../../components/StatusChip";
 import { getSubscriptionView } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
 import { formatRupiah } from "../../lib/format";
-import { hapticLight } from "../../lib/haptics";
-import { useAppStore } from "../../store/useAppStore";
 
 export default function SellerDashboardScreen() {
   const router = useRouter();
   const { profile, complex } = useAuth();
-  const setActiveRole = useAppStore((s) => s.setActiveRole);
 
   const subView = profile ? getSubscriptionView(profile) : { kind: "none" as const };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <AppHeader
-        title="Dapur Pesanan"
-        subtitle={profile?.shop_name ?? "Toko Saya"}
-        showLogo
-        rightSlot={
-          <Pressable
-            onPress={() => {
-              hapticLight();
-              setActiveRole("customer");
-              router.replace("/(customer)");
-            }}
-            android_ripple={{ color: "rgba(166,58,0,0.12)" }}
-            className="flex-row items-center gap-1.5 overflow-hidden rounded-full bg-field px-3 py-2 active:scale-95"
-          >
-            <ArrowLeftRight size={14} color="#A63A00" />
-            <Text className="text-xs font-bold text-cta">Mode Warga</Text>
-          </Pressable>
-        }
-      />
-
+    <SafeAreaView className="flex-1 bg-canvas" edges={["bottom"]}>
       <ScrollView
         className="flex-1 bg-canvas"
         contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 32 }}

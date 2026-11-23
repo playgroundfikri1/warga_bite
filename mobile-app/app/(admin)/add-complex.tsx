@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -12,7 +13,6 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronDown } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
 import { BottomSheetModal } from "../../components/BottomSheetModal";
 import { PrimaryButton } from "../../components/Buttons";
 import { SectionCard } from "../../components/SectionCard";
@@ -146,13 +146,7 @@ export default function AddComplexScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
-      <AppHeader
-        title="Tambah Komplek"
-        subtitle="Admin Komplek"
-        onBack={() => router.back()}
-      />
-
+    <SafeAreaView className="flex-1 bg-canvas" edges={["bottom"]}>
       <KeyboardAvoidingView
         className="flex-1 bg-canvas"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -164,16 +158,16 @@ export default function AddComplexScreen() {
           keyboardDismissMode="on-drag"
         >
         <SectionCard title="Detail Wilayah & Lokasi Komplek">
-          <View className="gap-3.5">
+          <View className="gap-4">
             <View>
-              <Text className="mb-1 text-xs font-bold text-ink">Provinsi</Text>
+              <Text className="mb-1.5 text-xs font-bold text-ink">Provinsi</Text>
               <Pressable
                 onPress={() => {
                   hapticLight();
                   setPickerOpen("province");
                 }}
                 android_ripple={{ color: "rgba(234,88,12,0.1)" }}
-                className="flex-row items-center justify-between overflow-hidden rounded-xl bg-field px-3.5 py-3 active:scale-[0.98]"
+                className="h-12 flex-row items-center justify-between overflow-hidden rounded-2xl bg-field px-4 active:scale-95"
               >
                 <Text className="text-sm text-ink">
                   {selectedProvince?.name ?? "Pilih Provinsi (Opsional)"}
@@ -183,7 +177,7 @@ export default function AddComplexScreen() {
             </View>
 
             <View>
-              <Text className="mb-1 text-xs font-bold text-ink">
+              <Text className="mb-1.5 text-xs font-bold text-ink">
                 Kota / Kabupaten
               </Text>
               <Pressable
@@ -193,7 +187,7 @@ export default function AddComplexScreen() {
                   setPickerOpen("city");
                 }}
                 android_ripple={{ color: "rgba(234,88,12,0.1)" }}
-                className="flex-row items-center justify-between overflow-hidden rounded-xl bg-field px-3.5 py-3 active:scale-[0.98]"
+                className="h-12 flex-row items-center justify-between overflow-hidden rounded-2xl bg-field px-4 active:scale-95"
               >
                 <Text className="text-sm text-ink">
                   {selectedCity?.name ?? "Pilih Kota / Kabupaten"}
@@ -303,60 +297,77 @@ export default function AddComplexScreen() {
               : "Pilih Kode Pos"
         }
       >
-        <ScrollView
-          style={{ maxHeight: 380 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-        >
-          {pickerOpen === "province" &&
-            provinces.map((p) => (
+        {pickerOpen === "province" && (
+          <FlatList
+            data={provinces}
+            keyExtractor={(item) => item.id}
+            style={{ maxHeight: 380 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: 10, paddingBottom: 8 }}
+            renderItem={({ item: p }) => (
               <Pressable
-                key={p.id}
                 onPress={() => {
                   hapticSelection();
                   setSelectedProvince(p);
                   setPickerOpen(null);
                 }}
                 android_ripple={{ color: "rgba(234,88,12,0.12)" }}
-                className="overflow-hidden rounded-xl border border-line bg-surface p-3.5 active:scale-[0.98]"
+                className="min-h-[48px] justify-center overflow-hidden rounded-2xl bg-canvas p-4 active:scale-95"
               >
                 <Text className="text-sm font-semibold text-ink">{p.name}</Text>
               </Pressable>
-            ))}
-          {pickerOpen === "city" &&
-            cities.map((c) => (
+            )}
+          />
+        )}
+        {pickerOpen === "city" && (
+          <FlatList
+            data={cities}
+            keyExtractor={(item) => item.id}
+            style={{ maxHeight: 380 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: 10, paddingBottom: 8 }}
+            renderItem={({ item: c }) => (
               <Pressable
-                key={c.id}
                 onPress={() => {
                   hapticSelection();
                   setSelectedCity(c);
                   setPickerOpen(null);
                 }}
                 android_ripple={{ color: "rgba(234,88,12,0.12)" }}
-                className="overflow-hidden rounded-xl border border-line bg-surface p-3.5 active:scale-[0.98]"
+                className="min-h-[48px] justify-center overflow-hidden rounded-2xl bg-canvas p-4 active:scale-95"
               >
                 <Text className="text-sm font-semibold text-ink">{c.name}</Text>
               </Pressable>
-            ))}
-          {pickerOpen === "postal" &&
-            postalCodes.map((pc) => (
+            )}
+          />
+        )}
+        {pickerOpen === "postal" && (
+          <FlatList
+            data={postalCodes}
+            keyExtractor={(item) => String(item.id)}
+            style={{ maxHeight: 380 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: 10, paddingBottom: 8 }}
+            renderItem={({ item: pc }) => (
               <Pressable
-                key={pc.id}
                 onPress={() => {
                   hapticSelection();
                   setSelectedPostal(pc);
                   setPickerOpen(null);
                 }}
                 android_ripple={{ color: "rgba(234,88,12,0.12)" }}
-                className="overflow-hidden rounded-xl border border-line bg-surface p-3.5 active:scale-[0.98]"
+                className="min-h-[48px] justify-center overflow-hidden rounded-2xl bg-canvas p-4 active:scale-95"
               >
                 <Text className="text-sm font-semibold text-ink">
                   {pc.postal_code} — {pc.subdistrict_name}
                 </Text>
               </Pressable>
-            ))}
-        </ScrollView>
+            )}
+          />
+        )}
       </BottomSheetModal>
     </SafeAreaView>
   );

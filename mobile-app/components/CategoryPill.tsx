@@ -25,10 +25,9 @@ export function CategoryPill({
         onPress();
       }}
       android_ripple={{ color: "rgba(166,58,0,0.14)" }}
-      className={`mr-2 flex-row items-center overflow-hidden rounded-full border px-3.5 py-2 active:scale-95 ${
-        active
-          ? "border-cta bg-cta"
-          : "border-line bg-surface active:bg-field"
+      style={!active ? { elevation: 1 } : undefined}
+      className={`mr-2.5 min-h-[40px] flex-row items-center overflow-hidden rounded-full px-4 py-2 active:scale-95 ${
+        active ? "bg-cta" : "bg-white active:bg-field"
       }`}
     >
       <Text

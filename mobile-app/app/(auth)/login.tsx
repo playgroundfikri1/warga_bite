@@ -118,7 +118,7 @@ export default function LoginScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Alamat Email
                 </Text>
-                <View className="flex-row items-center rounded-full bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <Mail size={18} color="#64748B" />
                   <TextInput
                     value={email}
@@ -128,7 +128,7 @@ export default function LoginScreen() {
                     autoCapitalize="none"
                     keyboardType="email-address"
                     autoComplete="email"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                 </View>
               </View>
@@ -137,7 +137,7 @@ export default function LoginScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Kata Sandi
                 </Text>
-                <View className="flex-row items-center rounded-full bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <Lock size={18} color="#64748B" />
                   <TextInput
                     value={password}
@@ -146,15 +146,15 @@ export default function LoginScreen() {
                     placeholderTextColor="#94A3B8"
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                   <Pressable
                     onPress={() => {
                       hapticLight();
                       setShowPassword((prev) => !prev);
                     }}
-                    hitSlop={8}
-                    className="active:scale-90 active:opacity-75"
+                    hitSlop={10}
+                    className="h-10 w-10 items-center justify-center rounded-full active:scale-95 active:opacity-75"
                   >
                     {showPassword ? (
                       <EyeOff size={18} color="#64748B" />

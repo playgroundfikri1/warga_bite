@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,7 +22,6 @@ import {
   Phone,
   User,
 } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
 import { BottomSheetModal } from "../../components/BottomSheetModal";
 import { PrimaryButton } from "../../components/Buttons";
 import { SearchBar } from "../../components/SearchBar";
@@ -120,13 +120,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
-      <AppHeader
-        title="Daftar Warga Baru"
-        subtitle="Verifikasi Email 6 Digit"
-        onBack={() => router.back()}
-      />
-
+    <SafeAreaView className="flex-1 bg-canvas" edges={["bottom"]}>
       <KeyboardAvoidingView
         className="flex-1 bg-canvas"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -136,7 +130,16 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-          <View className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+          <View
+            style={{
+              elevation: 2,
+              shadowColor: "#0F172A",
+              shadowOpacity: 0.05,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+            }}
+            className="rounded-2xl bg-white p-4"
+          >
             <Text className="text-sm font-bold text-ink">
               Data Identitas & Alamat Komplek
             </Text>
@@ -145,7 +148,7 @@ export default function RegisterScreen() {
               disetujui admin komplek Anda.
             </Text>
 
-            <View className="mt-4 gap-3.5">
+            <View className="mt-4 gap-4">
               {/* Pilih Komplek */}
               <View>
                 <Text className="mb-1.5 text-xs font-bold text-ink">
@@ -157,7 +160,7 @@ export default function RegisterScreen() {
                     setComplexModalOpen(true);
                   }}
                   android_ripple={{ color: "rgba(234,88,12,0.1)" }}
-                  className="flex-row items-center justify-between overflow-hidden rounded-2xl bg-field px-4 py-3.5 active:scale-[0.98]"
+                  className="h-12 flex-row items-center justify-between overflow-hidden rounded-2xl bg-field px-4 active:scale-95"
                 >
                   <View className="flex-1 flex-row items-center gap-2.5">
                     <Building2 size={18} color="#EA580C" />
@@ -185,14 +188,14 @@ export default function RegisterScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Nama Lengkap
                 </Text>
-                <View className="flex-row items-center rounded-2xl bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <User size={18} color="#64748B" />
                   <TextInput
                     value={fullName}
                     onChangeText={setFullName}
                     placeholder="Contoh: Ibu Siti Rahmawati"
                     placeholderTextColor="#94A3B8"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                 </View>
               </View>
@@ -202,7 +205,7 @@ export default function RegisterScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Nomor WhatsApp Aktif
                 </Text>
-                <View className="flex-row items-center rounded-2xl bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <Phone size={18} color="#64748B" />
                   <TextInput
                     value={phone}
@@ -210,7 +213,7 @@ export default function RegisterScreen() {
                     placeholder="0812xxxxxxxx"
                     placeholderTextColor="#94A3B8"
                     keyboardType="phone-pad"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                 </View>
               </View>
@@ -220,14 +223,14 @@ export default function RegisterScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Blok & Nomor Rumah
                 </Text>
-                <View className="flex-row items-center rounded-2xl bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <Home size={18} color="#64748B" />
                   <TextInput
                     value={houseBlock}
                     onChangeText={setHouseBlock}
                     placeholder="Contoh: Blok C4 No. 12"
                     placeholderTextColor="#94A3B8"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                 </View>
               </View>
@@ -237,7 +240,7 @@ export default function RegisterScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Alamat / Patokan Rumah
                 </Text>
-                <View className="flex-row items-start rounded-2xl bg-field px-4 py-3">
+                <View className="min-h-[48px] flex-row items-start rounded-2xl bg-field px-4 py-3">
                   <MapPin size={18} color="#64748B" className="mt-0.5" />
                   <TextInput
                     value={fullAddress}
@@ -256,7 +259,7 @@ export default function RegisterScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Alamat Email (Untuk Kode OTP)
                 </Text>
-                <View className="flex-row items-center rounded-2xl bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <Mail size={18} color="#64748B" />
                   <TextInput
                     value={email}
@@ -265,7 +268,7 @@ export default function RegisterScreen() {
                     placeholderTextColor="#94A3B8"
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                 </View>
               </View>
@@ -275,7 +278,7 @@ export default function RegisterScreen() {
                 <Text className="mb-1.5 text-xs font-bold text-ink">
                   Kata Sandi (Min. 6 Karakter)
                 </Text>
-                <View className="flex-row items-center rounded-2xl bg-field px-4 py-3">
+                <View className="h-12 flex-row items-center rounded-2xl bg-field px-4">
                   <Lock size={18} color="#64748B" />
                   <TextInput
                     value={password}
@@ -284,7 +287,7 @@ export default function RegisterScreen() {
                     placeholderTextColor="#94A3B8"
                     secureTextEntry
                     autoCapitalize="none"
-                    className="ml-3 flex-1 text-sm text-ink"
+                    className="ml-3 h-12 flex-1 text-sm text-ink"
                   />
                 </View>
               </View>
@@ -317,24 +320,30 @@ export default function RegisterScreen() {
         {loadingComplexes ? (
           <ListCardSkeleton count={3} />
         ) : (
-          <ScrollView
+          <FlatList
+            data={filteredComplexes}
+            keyExtractor={(item) => item.id}
             style={{ maxHeight: 360 }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-          >
-            {filteredComplexes.map((item) => (
+            contentContainerStyle={{ gap: 10, paddingBottom: 8 }}
+            ListEmptyComponent={
+              <Text className="py-8 text-center text-sm text-ink-secondary">
+                Komplek tidak ditemukan.
+              </Text>
+            }
+            renderItem={({ item }) => (
               <Pressable
-                key={item.id}
                 onPress={() => {
                   hapticSelection();
                   setSelectedComplex(item);
                   setComplexModalOpen(false);
                 }}
                 android_ripple={{ color: "rgba(234,88,12,0.12)" }}
-                className={`mb-2.5 overflow-hidden rounded-2xl border p-4 active:scale-[0.98] ${
+                className={`min-h-[48px] justify-center overflow-hidden rounded-2xl p-4 active:scale-95 ${
                   selectedComplex?.id === item.id
-                    ? "border-cta bg-chip-peach/40"
-                    : "border-line bg-surface"
+                    ? "bg-chip-peach/60"
+                    : "bg-canvas"
                 }`}
               >
                 <Text className="text-sm font-bold text-ink">{item.name}</Text>
@@ -344,13 +353,8 @@ export default function RegisterScreen() {
                   </Text>
                 ) : null}
               </Pressable>
-            ))}
-            {filteredComplexes.length === 0 && (
-              <Text className="py-8 text-center text-sm text-ink-secondary">
-                Komplek tidak ditemukan.
-              </Text>
             )}
-          </ScrollView>
+          />
         )}
       </BottomSheetModal>
     </SafeAreaView>

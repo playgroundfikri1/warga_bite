@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Minus, Plus, ReceiptText, Trash2 } from "lucide-react-native";
-import { AppHeader } from "../../../components/AppHeader";
 import { BottomSheetModal } from "../../../components/BottomSheetModal";
 import { PrimaryButton, SecondaryButton } from "../../../components/Buttons";
 import { SectionCard } from "../../../components/SectionCard";
@@ -15,7 +13,7 @@ import { useAppStore } from "../../../store/useAppStore";
 
 export default function CustomerOrdersScreen() {
   const router = useRouter();
-  const { complex, isPending, refreshProfile } = useAuth();
+  const { isPending, refreshProfile } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const cart = useAppStore((s) => s.cart);
@@ -37,15 +35,11 @@ export default function CustomerOrdersScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <AppHeader
-        title="Pesanan & Keranjang"
-        subtitle={complex?.name ?? "Komplek WargaBite"}
-      />
-
-      <ScrollView
-        className="flex-1 bg-canvas"
-        contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
+    <View className="flex-1 bg-canvas">
+      <FlatList
+        data={cart}
+        keyExtractor={(item) => item.productId}
+        contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 32 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -54,86 +48,107 @@ export default function CustomerOrdersScreen() {
             tintColor="#EA580C"
           />
         }
-      >
-        {cart.length > 0 ? (
-          <SectionCard
-            title={`Keranjang • ${cart[0].shopName}`}
-            subtitle="Metode pembayaran: Bayar Tunai di Tempat (COD)"
-            rightElement={<StatusChip label="COD" variant="peach" />}
+        ListHeaderComponent={
+          cart.length > 0 ? (
+            <SectionCard
+              title={`Keranjang • ${cart[0].shopName}`}
+              subtitle="Metode pembayaran: Bayar Tunai di Tempat (COD)"
+              rightElement={<StatusChip label="COD" variant="peach" />}
+            >
+              <Text className="text-xs text-ink-secondary">
+                Pastikan jumlah porsi sudah sesuai sebelum melanjutkan Checkout
+                COD.
+              </Text>
+            </SectionCard>
+          ) : undefined
+        }
+        renderItem={({ item }) => (
+          <View
+            style={{
+              elevation: 2,
+              shadowColor: "#0F172A",
+              shadowOpacity: 0.05,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+            }}
+            className="flex-row items-center justify-between rounded-2xl bg-white p-4"
           >
-            <View className="gap-3">
-              {cart.map((item) => (
-                <View
-                  key={item.productId}
-                  className="flex-row items-center justify-between border-b border-line pb-3 last:border-b-0 last:pb-0"
-                >
-                  <View className="flex-1 pr-2">
-                    <Text className="text-sm font-bold text-ink">
-                      {item.name}
-                    </Text>
-                    <Text className="mt-0.5 text-xs font-semibold text-cta">
-                      {formatRupiah(item.price)}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row items-center gap-2">
-                    <Pressable
-                      onPress={() =>
-                        updateQuantity(item.productId, item.quantity - 1)
-                      }
-                      className="h-7 w-7 items-center justify-center rounded-full bg-field"
-                    >
-                      <Minus size={14} color="#1E293B" />
-                    </Pressable>
-                    <Text className="w-5 text-center text-xs font-bold text-ink">
-                      {item.quantity}
-                    </Text>
-                    <Pressable
-                      onPress={() =>
-                        updateQuantity(item.productId, item.quantity + 1)
-                      }
-                      className="h-7 w-7 items-center justify-center rounded-full bg-field"
-                    >
-                      <Plus size={14} color="#1E293B" />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => removeFromCart(item.productId)}
-                      className="ml-1 p-1"
-                    >
-                      <Trash2 size={15} color="#DC2626" />
-                    </Pressable>
-                  </View>
-                </View>
-              ))}
-            </View>
-
-            <View className="mt-4 flex-row items-center justify-between border-t border-line pt-3">
-              <Text className="text-sm font-semibold text-ink-secondary">
-                Total Tagihan (COD)
-              </Text>
-              <Text className="text-lg font-extrabold text-cta">
-                {formatRupiah(total)}
+            <View className="flex-1 pr-3">
+              <Text className="text-sm font-bold text-ink">{item.name}</Text>
+              <Text className="mt-1 text-xs font-semibold text-cta">
+                {formatRupiah(item.price)}
               </Text>
             </View>
 
-            <View className="mt-4 gap-2">
-              <PrimaryButton
-                title={
-                  isPending
-                    ? "Akun Menunggu Verifikasi"
-                    : "Checkout COD (Aktif di Tahap 4)"
-                }
-                onPress={() => {}}
-                disabled
-              />
-              <SecondaryButton
-                title="Kosongkan Keranjang"
-                onPress={() => setConfirmClearOpen(true)}
-                variant="outline"
-              />
+            <View className="flex-row items-center gap-2">
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  updateQuantity(item.productId, item.quantity - 1);
+                }}
+                android_ripple={{ color: "rgba(30,41,59,0.12)", borderless: true }}
+                className="h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-field active:scale-95"
+              >
+                <Minus size={16} color="#1E293B" />
+              </Pressable>
+              <Text className="w-6 text-center text-sm font-bold text-ink">
+                {item.quantity}
+              </Text>
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  updateQuantity(item.productId, item.quantity + 1);
+                }}
+                android_ripple={{ color: "rgba(30,41,59,0.12)", borderless: true }}
+                className="h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-field active:scale-95"
+              >
+                <Plus size={16} color="#1E293B" />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  removeFromCart(item.productId);
+                }}
+                android_ripple={{ color: "rgba(220,38,38,0.12)", borderless: true }}
+                className="ml-1 h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-red-50 active:scale-95"
+              >
+                <Trash2 size={16} color="#DC2626" />
+              </Pressable>
             </View>
-          </SectionCard>
-        ) : (
+          </View>
+        )}
+        ListFooterComponent={
+          cart.length > 0 ? (
+            <SectionCard>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-sm font-semibold text-ink-secondary">
+                  Total Sementara
+                </Text>
+                <Text className="text-lg font-extrabold text-cta">
+                  {formatRupiah(total)}
+                </Text>
+              </View>
+
+              <View className="mt-4 gap-3">
+                <PrimaryButton
+                  title={
+                    isPending
+                      ? "Akun Menunggu Verifikasi"
+                      : "Checkout COD (Aktif di Tahap 4)"
+                  }
+                  onPress={() => {}}
+                  disabled
+                />
+                <SecondaryButton
+                  title="Kosongkan Keranjang"
+                  onPress={() => setConfirmClearOpen(true)}
+                  variant="outline"
+                />
+              </View>
+            </SectionCard>
+          ) : undefined
+        }
+        ListEmptyComponent={
           <SectionCard>
             <View className="items-center py-6">
               <View className="mb-3 h-14 w-14 items-center justify-center rounded-full bg-field">
@@ -154,8 +169,8 @@ export default function CustomerOrdersScreen() {
               </View>
             </View>
           </SectionCard>
-        )}
-      </ScrollView>
+        }
+      />
 
       <BottomSheetModal
         visible={confirmClearOpen}
@@ -163,7 +178,7 @@ export default function CustomerOrdersScreen() {
         title="Kosongkan Keranjang?"
         subtitle="Semua menu di keranjang sementara akan dihapus."
       >
-        <View className="gap-2.5 pb-2">
+        <View className="gap-3 pb-2">
           <PrimaryButton
             title="Ya, Kosongkan Keranjang"
             onPress={() => {
@@ -179,6 +194,6 @@ export default function CustomerOrdersScreen() {
           />
         </View>
       </BottomSheetModal>
-    </SafeAreaView>
+    </View>
   );
 }

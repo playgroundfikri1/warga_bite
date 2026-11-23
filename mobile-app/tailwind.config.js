@@ -21,7 +21,7 @@ module.exports = {
           dark: "#8A2F00",
         },
         surface: "#FFFFFF",
-        canvas: "#F8FAFF",
+        canvas: "#F8FAFC",
         field: "#EEF2FF",
         chip: {
           mint: "#7CF5C5",

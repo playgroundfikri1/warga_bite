@@ -31,10 +31,10 @@ export function PrimaryButton({
       }}
       disabled={isDisabled}
       android_ripple={{ color: "rgba(255,255,255,0.22)" }}
-      className={`flex-row items-center justify-center overflow-hidden rounded-full px-5 py-3.5 ${
+      className={`h-12 min-h-[48px] flex-row items-center justify-center overflow-hidden rounded-full px-5 ${
         isDisabled
           ? "bg-status-muted/60"
-          : "bg-cta active:scale-[0.98] active:bg-cta-dark"
+          : "bg-cta active:scale-95 active:bg-cta-dark"
       } ${className}`}
     >
       {loading ? (
@@ -64,8 +64,8 @@ export function SecondaryButton({
   const isDisabled = disabled || loading;
   const baseStyle =
     variant === "outline"
-      ? "border border-line bg-surface active:scale-[0.98] active:bg-field"
-      : "bg-field active:scale-[0.98] active:bg-line";
+      ? "bg-white shadow-sm active:scale-95 active:bg-field"
+      : "bg-field active:scale-95 active:bg-line";
 
   return (
     <Pressable
@@ -75,7 +75,7 @@ export function SecondaryButton({
       }}
       disabled={isDisabled}
       android_ripple={{ color: "rgba(166,58,0,0.12)" }}
-      className={`flex-row items-center justify-center overflow-hidden rounded-full px-4 py-3 ${
+      className={`h-12 min-h-[48px] flex-row items-center justify-center overflow-hidden rounded-full px-4 ${
         isDisabled ? "opacity-50" : baseStyle
       } ${className}`}
     >

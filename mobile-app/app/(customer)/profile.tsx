@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -20,7 +21,6 @@ import {
   Truck,
   User,
 } from "lucide-react-native";
-import { AppHeader } from "../../components/AppHeader";
 import { PrimaryButton, SecondaryButton } from "../../components/Buttons";
 import { SectionCard } from "../../components/SectionCard";
 import { StatusChip } from "../../components/StatusChip";
@@ -72,6 +72,34 @@ export default function CustomerProfileScreen() {
   const [shopName, setShopName] = useState("");
   const [shopDesc, setShopDesc] = useState("");
   const [submittingSeller, setSubmittingSeller] = useState(false);
+
+  const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates?.height ?? 0);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  const scrollToField = (yOffset: number) => {
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: yOffset, animated: true });
+    }, 120);
+  };
 
   const handleSaveAddress = async () => {
     if (!profile) return;
@@ -144,19 +172,20 @@ export default function CustomerProfileScreen() {
     .join("");
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
-      <AppHeader
-        title="Profil Warga"
-        subtitle={complex?.name ?? "Komplek WargaBite"}
-      />
-
+    <View className="flex-1 bg-canvas">
       <KeyboardAvoidingView
         className="flex-1 bg-canvas"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         <ScrollView
+          ref={scrollRef}
           className="flex-1 bg-canvas"
-          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
+          contentContainerStyle={{
+            padding: 16,
+            gap: 16,
+            paddingBottom: keyboardHeight > 0 ? keyboardHeight + 36 : 32,
+          }}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
@@ -212,10 +241,9 @@ export default function CustomerProfileScreen() {
                   <Pressable
                     key={role}
                     onPress={() => handleSwitchRole(role)}
-                    className={`flex-row items-center gap-2 rounded-full border px-3.5 py-2 ${
-                      isCurrent
-                        ? "border-cta bg-chip-peach"
-                        : "border-line bg-field"
+                    android_ripple={{ color: "rgba(166,58,0,0.12)" }}
+                    className={`min-h-[44px] flex-row items-center gap-2 overflow-hidden rounded-full px-4 py-2 active:scale-95 ${
+                      isCurrent ? "bg-chip-peach" : "bg-field"
                     }`}
                   >
                     {info.icon}
@@ -243,8 +271,9 @@ export default function CustomerProfileScreen() {
               <TextInput
                 value={houseBlock}
                 onChangeText={setHouseBlock}
+                onFocus={() => scrollToField(160)}
                 placeholder="Blok C4 No. 12"
-                className="rounded-xl bg-field px-3.5 py-2.5 text-sm text-ink"
+                className="h-12 rounded-2xl bg-field px-4 text-sm text-ink"
               />
             </View>
             <View>
@@ -254,8 +283,9 @@ export default function CustomerProfileScreen() {
               <TextInput
                 value={fullAddress}
                 onChangeText={setFullAddress}
+                onFocus={() => scrollToField(230)}
                 placeholder="Pagar putih depan taman"
-                className="rounded-xl bg-field px-3.5 py-2.5 text-sm text-ink"
+                className="h-12 rounded-2xl bg-field px-4 text-sm text-ink"
               />
             </View>
             <View>
@@ -265,9 +295,10 @@ export default function CustomerProfileScreen() {
               <TextInput
                 value={phone}
                 onChangeText={setPhone}
+                onFocus={() => scrollToField(300)}
                 keyboardType="phone-pad"
                 placeholder="0812xxxxxxxx"
-                className="rounded-xl bg-field px-3.5 py-2.5 text-sm text-ink"
+                className="h-12 rounded-2xl bg-field px-4 text-sm text-ink"
               />
             </View>
             <SecondaryButton
@@ -303,16 +334,28 @@ export default function CustomerProfileScreen() {
                 <TextInput
                   value={shopName}
                   onChangeText={setShopName}
+                  onFocus={() =>
+                    setTimeout(
+                      () => scrollRef.current?.scrollToEnd({ animated: true }),
+                      120
+                    )
+                  }
                   placeholder="Nama Dapur / Usaha (mis. Dapur Bu Tejo)"
-                  className="rounded-xl bg-field px-3.5 py-2.5 text-sm text-ink"
+                  className="h-12 rounded-2xl bg-field px-4 text-sm text-ink"
                 />
                 <TextInput
                   value={shopDesc}
                   onChangeText={setShopDesc}
+                  onFocus={() =>
+                    setTimeout(
+                      () => scrollRef.current?.scrollToEnd({ animated: true }),
+                      120
+                    )
+                  }
                   placeholder="Deskripsi singkat masakan andalan Anda"
                   multiline
                   numberOfLines={2}
-                  className="rounded-xl bg-field px-3.5 py-2.5 text-sm text-ink"
+                  className="min-h-[64px] rounded-2xl bg-field px-4 py-3 text-sm text-ink"
                 />
                 <PrimaryButton
                   title="Ajukan Jadi Penjual"
@@ -339,6 +382,6 @@ export default function CustomerProfileScreen() {
         />
       </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }

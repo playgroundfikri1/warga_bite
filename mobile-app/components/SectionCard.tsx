@@ -10,7 +10,7 @@ interface SectionCardProps {
 }
 
 /**
- * Kartu permukaan putih dengan border tipis #E2E8F0 dan radius besar.
+ * Kartu permukaan putih bersih dengan shadow/elevation halus di atas latar #F8FAFC.
  */
 export function SectionCard({
   title,
@@ -21,7 +21,14 @@ export function SectionCard({
 }: SectionCardProps) {
   return (
     <View
-      className={`rounded-2xl border border-line bg-surface p-4 shadow-sm ${className}`}
+      style={{
+        elevation: 2,
+        shadowColor: "#0F172A",
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+      }}
+      className={`rounded-2xl bg-white p-4 ${className}`}
     >
       {(title || rightElement) && (
         <View className="mb-3 flex-row items-center justify-between gap-2">

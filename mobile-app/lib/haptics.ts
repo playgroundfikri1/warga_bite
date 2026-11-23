@@ -4,27 +4,27 @@ import { Platform } from "react-native";
 const isNative = Platform.OS === "ios" || Platform.OS === "android";
 
 /**
- * Getaran sentuh ringan untuk tombol aksi & perpindahan tab.
+ * Getaran sentuh untuk tombol aksi & perpindahan tab (level Medium agar terasa mantap di Android/iOS).
  */
 export function hapticLight() {
-  if (!isNative) return;
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-}
-
-/**
- * Getaran sentuh sedang untuk konfirmasi penting.
- */
-export function hapticMedium() {
   if (!isNative) return;
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 }
 
 /**
- * Getaran pilihan halus (filter kategori, pilihan list).
+ * Getaran sentuh kuat untuk konfirmasi penting.
+ */
+export function hapticMedium() {
+  if (!isNative) return;
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
+}
+
+/**
+ * Getaran pilihan (filter kategori, pilihan list).
  */
 export function hapticSelection() {
   if (!isNative) return;
-  Haptics.selectionAsync().catch(() => {});
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
 }
 
 /**
