@@ -24,10 +24,12 @@ import { AppHeader } from "../../../components/AppHeader";
 import { PendingBanner } from "../../../components/Banners";
 import { PrimaryButton } from "../../../components/Buttons";
 import { SectionCard } from "../../../components/SectionCard";
+import { ProductDetailSkeleton } from "../../../components/Skeleton";
 import { StatusChip } from "../../../components/StatusChip";
 import { getProductDetail, type ProductDetail } from "../../../lib/api";
 import { useAuth } from "../../../lib/auth-context";
 import { formatRupiah, formatWhatsAppUrl } from "../../../lib/format";
+import { hapticLight, hapticSuccess } from "../../../lib/haptics";
 import { useAppStore } from "../../../store/useAppStore";
 
 export default function ProductDetailScreen() {
@@ -89,6 +91,7 @@ export default function ProductDetailScreen() {
             onPress: () => {
               clearCart();
               addToCart(payload, qty);
+              hapticSuccess();
               router.push("/(customer)/orders");
             },
           },
@@ -97,6 +100,7 @@ export default function ProductDetailScreen() {
       return;
     }
 
+    hapticSuccess();
     Alert.alert("Masuk Keranjang", `${qty}x ${detail.product_name} ditambahkan.`, [
       { text: "Lanjut Lihat Menu", style: "cancel" },
       {
@@ -115,9 +119,7 @@ export default function ProductDetailScreen() {
       />
 
       {loading ? (
-        <View className="flex-1 items-center justify-center bg-canvas">
-          <ActivityIndicator size="large" color="#EA580C" />
-        </View>
+        <ProductDetailSkeleton />
       ) : !detail ? (
         <View className="flex-1 items-center justify-center bg-canvas px-6">
           <Text className="text-base font-bold text-ink">
@@ -249,9 +251,13 @@ export default function ProductDetailScreen() {
           >
             <View className="flex-row items-center rounded-full border border-line bg-field px-2 py-1">
               <Pressable
-                onPress={() => setQty((q) => Math.max(1, q - 1))}
+                onPress={() => {
+                  hapticLight();
+                  setQty((q) => Math.max(1, q - 1));
+                }}
                 disabled={!canOrder}
-                className="h-8 w-8 items-center justify-center rounded-full bg-surface"
+                android_ripple={{ color: "rgba(30,41,59,0.12)", borderless: true }}
+                className="h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-surface active:scale-90"
               >
                 <Minus size={15} color="#1E293B" />
               </Pressable>
@@ -259,9 +265,13 @@ export default function ProductDetailScreen() {
                 {qty}
               </Text>
               <Pressable
-                onPress={() => setQty((q) => q + 1)}
+                onPress={() => {
+                  hapticLight();
+                  setQty((q) => q + 1);
+                }}
                 disabled={!canOrder}
-                className="h-8 w-8 items-center justify-center rounded-full bg-surface"
+                android_ripple={{ color: "rgba(30,41,59,0.12)", borderless: true }}
+                className="h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-surface active:scale-90"
               >
                 <Plus size={15} color="#1E293B" />
               </Pressable>

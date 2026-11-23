@@ -1,19 +1,23 @@
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Minus, Plus, ReceiptText, Trash2 } from "lucide-react-native";
 import { AppHeader } from "../../../components/AppHeader";
+import { BottomSheetModal } from "../../../components/BottomSheetModal";
 import { PrimaryButton, SecondaryButton } from "../../../components/Buttons";
 import { SectionCard } from "../../../components/SectionCard";
 import { StatusChip } from "../../../components/StatusChip";
 import { useAuth } from "../../../lib/auth-context";
 import { formatRupiah } from "../../../lib/format";
+import { hapticLight, hapticSuccess } from "../../../lib/haptics";
 import { useAppStore } from "../../../store/useAppStore";
 
 export default function CustomerOrdersScreen() {
   const router = useRouter();
-  const { complex, isPending } = useAuth();
+  const { complex, isPending, refreshProfile } = useAuth();
+  const [refreshing, setRefreshing] = useState(false);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const cart = useAppStore((s) => s.cart);
   const updateQuantity = useAppStore((s) => s.updateQuantity);
   const removeFromCart = useAppStore((s) => s.removeFromCart);
@@ -21,6 +25,16 @@ export default function CustomerOrdersScreen() {
   const getCartTotal = useAppStore((s) => s.getCartTotal);
 
   const total = getCartTotal();
+
+  const handleRefresh = async () => {
+    hapticLight();
+    setRefreshing(true);
+    try {
+      await refreshProfile();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
@@ -32,6 +46,14 @@ export default function CustomerOrdersScreen() {
       <ScrollView
         className="flex-1 bg-canvas"
         contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={["#EA580C"]}
+            tintColor="#EA580C"
+          />
+        }
       >
         {cart.length > 0 ? (
           <SectionCard
@@ -106,7 +128,7 @@ export default function CustomerOrdersScreen() {
               />
               <SecondaryButton
                 title="Kosongkan Keranjang"
-                onPress={clearCart}
+                onPress={() => setConfirmClearOpen(true)}
                 variant="outline"
               />
             </View>
@@ -134,6 +156,29 @@ export default function CustomerOrdersScreen() {
           </SectionCard>
         )}
       </ScrollView>
+
+      <BottomSheetModal
+        visible={confirmClearOpen}
+        onClose={() => setConfirmClearOpen(false)}
+        title="Kosongkan Keranjang?"
+        subtitle="Semua menu di keranjang sementara akan dihapus."
+      >
+        <View className="gap-2.5 pb-2">
+          <PrimaryButton
+            title="Ya, Kosongkan Keranjang"
+            onPress={() => {
+              clearCart();
+              hapticSuccess();
+              setConfirmClearOpen(false);
+            }}
+          />
+          <SecondaryButton
+            title="Batal"
+            variant="outline"
+            onPress={() => setConfirmClearOpen(false)}
+          />
+        </View>
+      </BottomSheetModal>
     </SafeAreaView>
   );
 }

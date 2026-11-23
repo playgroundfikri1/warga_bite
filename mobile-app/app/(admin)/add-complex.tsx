@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Modal,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -12,6 +13,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronDown } from "lucide-react-native";
 import { AppHeader } from "../../components/AppHeader";
+import { BottomSheetModal } from "../../components/BottomSheetModal";
 import { PrimaryButton } from "../../components/Buttons";
 import { SectionCard } from "../../components/SectionCard";
 import {
@@ -21,6 +23,7 @@ import {
   listProvinces,
 } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
+import { hapticLight, hapticSelection } from "../../lib/haptics";
 import type { City, PostalCode, Province } from "../../types/database";
 
 type PickerKind = "province" | "city" | "postal" | null;
@@ -143,24 +146,34 @@ export default function AddComplexScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
       <AppHeader
         title="Tambah Komplek"
         subtitle="Admin Komplek"
         onBack={() => router.back()}
       />
 
-      <ScrollView
+      <KeyboardAvoidingView
         className="flex-1 bg-canvas"
-        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+        <ScrollView
+          className="flex-1 bg-canvas"
+          contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
         <SectionCard title="Detail Wilayah & Lokasi Komplek">
           <View className="gap-3.5">
             <View>
               <Text className="mb-1 text-xs font-bold text-ink">Provinsi</Text>
               <Pressable
-                onPress={() => setPickerOpen("province")}
-                className="flex-row items-center justify-between rounded-xl bg-field px-3.5 py-3"
+                onPress={() => {
+                  hapticLight();
+                  setPickerOpen("province");
+                }}
+                android_ripple={{ color: "rgba(234,88,12,0.1)" }}
+                className="flex-row items-center justify-between overflow-hidden rounded-xl bg-field px-3.5 py-3 active:scale-[0.98]"
               >
                 <Text className="text-sm text-ink">
                   {selectedProvince?.name ?? "Pilih Provinsi (Opsional)"}
@@ -174,8 +187,13 @@ export default function AddComplexScreen() {
                 Kota / Kabupaten
               </Text>
               <Pressable
-                onPress={() => selectedProvince && setPickerOpen("city")}
-                className="flex-row items-center justify-between rounded-xl bg-field px-3.5 py-3"
+                onPress={() => {
+                  if (!selectedProvince) return;
+                  hapticLight();
+                  setPickerOpen("city");
+                }}
+                android_ripple={{ color: "rgba(234,88,12,0.1)" }}
+                className="flex-row items-center justify-between overflow-hidden rounded-xl bg-field px-3.5 py-3 active:scale-[0.98]"
               >
                 <Text className="text-sm text-ink">
                   {selectedCity?.name ?? "Pilih Kota / Kabupaten"}
@@ -270,74 +288,76 @@ export default function AddComplexScreen() {
             />
           </View>
         </SectionCard>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-      {/* Picker modal */}
-      <Modal
+      {/* Bottom Sheet picker */}
+      <BottomSheetModal
         visible={pickerOpen !== null}
-        animationType="slide"
-        onRequestClose={() => setPickerOpen(null)}
+        onClose={() => setPickerOpen(null)}
+        title={
+          pickerOpen === "province"
+            ? "Pilih Provinsi"
+            : pickerOpen === "city"
+              ? "Pilih Kota / Kabupaten"
+              : "Pilih Kode Pos"
+        }
       >
-        <SafeAreaView className="flex-1 bg-canvas">
-          <AppHeader
-            title={
-              pickerOpen === "province"
-                ? "Pilih Provinsi"
-                : pickerOpen === "city"
-                  ? "Pilih Kota / Kabupaten"
-                  : "Pilih Kode Pos"
-            }
-            onBack={() => setPickerOpen(null)}
-          />
-          <ScrollView contentContainerStyle={{ padding: 16, gap: 8 }}>
-            {pickerOpen === "province" &&
-              provinces.map((p) => (
-                <Pressable
-                  key={p.id}
-                  onPress={() => {
-                    setSelectedProvince(p);
-                    setPickerOpen(null);
-                  }}
-                  className="rounded-xl border border-line bg-surface p-3.5"
-                >
-                  <Text className="text-sm font-semibold text-ink">
-                    {p.name}
-                  </Text>
-                </Pressable>
-              ))}
-            {pickerOpen === "city" &&
-              cities.map((c) => (
-                <Pressable
-                  key={c.id}
-                  onPress={() => {
-                    setSelectedCity(c);
-                    setPickerOpen(null);
-                  }}
-                  className="rounded-xl border border-line bg-surface p-3.5"
-                >
-                  <Text className="text-sm font-semibold text-ink">
-                    {c.name}
-                  </Text>
-                </Pressable>
-              ))}
-            {pickerOpen === "postal" &&
-              postalCodes.map((pc) => (
-                <Pressable
-                  key={pc.id}
-                  onPress={() => {
-                    setSelectedPostal(pc);
-                    setPickerOpen(null);
-                  }}
-                  className="rounded-xl border border-line bg-surface p-3.5"
-                >
-                  <Text className="text-sm font-semibold text-ink">
-                    {pc.postal_code} — {pc.subdistrict_name}
-                  </Text>
-                </Pressable>
-              ))}
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
+        <ScrollView
+          style={{ maxHeight: 380 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
+        >
+          {pickerOpen === "province" &&
+            provinces.map((p) => (
+              <Pressable
+                key={p.id}
+                onPress={() => {
+                  hapticSelection();
+                  setSelectedProvince(p);
+                  setPickerOpen(null);
+                }}
+                android_ripple={{ color: "rgba(234,88,12,0.12)" }}
+                className="overflow-hidden rounded-xl border border-line bg-surface p-3.5 active:scale-[0.98]"
+              >
+                <Text className="text-sm font-semibold text-ink">{p.name}</Text>
+              </Pressable>
+            ))}
+          {pickerOpen === "city" &&
+            cities.map((c) => (
+              <Pressable
+                key={c.id}
+                onPress={() => {
+                  hapticSelection();
+                  setSelectedCity(c);
+                  setPickerOpen(null);
+                }}
+                android_ripple={{ color: "rgba(234,88,12,0.12)" }}
+                className="overflow-hidden rounded-xl border border-line bg-surface p-3.5 active:scale-[0.98]"
+              >
+                <Text className="text-sm font-semibold text-ink">{c.name}</Text>
+              </Pressable>
+            ))}
+          {pickerOpen === "postal" &&
+            postalCodes.map((pc) => (
+              <Pressable
+                key={pc.id}
+                onPress={() => {
+                  hapticSelection();
+                  setSelectedPostal(pc);
+                  setPickerOpen(null);
+                }}
+                android_ripple={{ color: "rgba(234,88,12,0.12)" }}
+                className="overflow-hidden rounded-xl border border-line bg-surface p-3.5 active:scale-[0.98]"
+              >
+                <Text className="text-sm font-semibold text-ink">
+                  {pc.postal_code} — {pc.subdistrict_name}
+                </Text>
+              </Pressable>
+            ))}
+        </ScrollView>
+      </BottomSheetModal>
     </SafeAreaView>
   );
 }

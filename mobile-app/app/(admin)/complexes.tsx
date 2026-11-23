@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
@@ -15,8 +14,10 @@ import { AppHeader } from "../../components/AppHeader";
 import { PrimaryButton } from "../../components/Buttons";
 import { SearchBar } from "../../components/SearchBar";
 import { SectionCard } from "../../components/SectionCard";
+import { ListCardSkeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
 import { listComplexes } from "../../lib/api";
+import { hapticLight } from "../../lib/haptics";
 import { useAppStore } from "../../store/useAppStore";
 import type { Complex } from "../../types/database";
 
@@ -61,10 +62,12 @@ export default function AdminComplexesScreen() {
         rightSlot={
           <Pressable
             onPress={() => {
+              hapticLight();
               setActiveRole("customer");
               router.replace("/(customer)");
             }}
-            className="flex-row items-center gap-1.5 rounded-full bg-field px-3 py-2"
+            android_ripple={{ color: "rgba(166,58,0,0.12)" }}
+            className="flex-row items-center gap-1.5 overflow-hidden rounded-full bg-field px-3 py-2 active:scale-95"
           >
             <ArrowLeftRight size={14} color="#A63A00" />
             <Text className="text-xs font-bold text-cta">Mode Warga</Text>
@@ -87,16 +90,19 @@ export default function AdminComplexesScreen() {
         </View>
 
         {loading ? (
-          <ActivityIndicator color="#EA580C" className="mt-10" />
+          <ListCardSkeleton count={4} />
         ) : (
           <FlatList
             data={filtered}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ gap: 10, paddingBottom: 24 }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={() => {
+                  hapticLight();
                   setRefreshing(true);
                   load();
                 }}

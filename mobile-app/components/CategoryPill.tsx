@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import { hapticSelection } from "../lib/haptics";
 
 interface CategoryPillProps {
   label: string;
@@ -19,8 +20,12 @@ export function CategoryPill({
 }: CategoryPillProps) {
   return (
     <Pressable
-      onPress={onPress}
-      className={`mr-2 flex-row items-center rounded-full border px-3.5 py-2 ${
+      onPress={() => {
+        hapticSelection();
+        onPress();
+      }}
+      android_ripple={{ color: "rgba(166,58,0,0.14)" }}
+      className={`mr-2 flex-row items-center overflow-hidden rounded-full border px-3.5 py-2 active:scale-95 ${
         active
           ? "border-cta bg-cta"
           : "border-line bg-surface active:bg-field"

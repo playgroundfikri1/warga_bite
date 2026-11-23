@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import {
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -24,6 +26,7 @@ import { SectionCard } from "../../components/SectionCard";
 import { StatusChip } from "../../components/StatusChip";
 import { requestSeller, updateAddress } from "../../lib/api";
 import { homeRouteForRole, useAuth } from "../../lib/auth-context";
+import { hapticError, hapticLight, hapticSuccess } from "../../lib/haptics";
 import { useAppStore } from "../../store/useAppStore";
 import type { AppRole } from "../../types/database";
 
@@ -84,8 +87,10 @@ export default function CustomerProfileScreen() {
         phone: phone.trim(),
       });
       await refreshProfile();
+      hapticSuccess();
       Alert.alert("Tersimpan", "Alamat dan kontak Anda berhasil diperbarui.");
     } catch (err) {
+      hapticError();
       Alert.alert(
         "Gagal Menyimpan",
         err instanceof Error ? err.message : "Terjadi kesalahan."
@@ -105,11 +110,13 @@ export default function CustomerProfileScreen() {
     try {
       await requestSeller(profile.id, shopName.trim(), shopDesc.trim());
       await refreshProfile();
+      hapticSuccess();
       Alert.alert(
         "Pengajuan Terkirim",
         "Pengajuan penjual Anda akan ditinjau Admin Komplek. Setelah disetujui, Anda langsung mendapat Gratis 30 Hari!"
       );
     } catch (err) {
+      hapticError();
       Alert.alert(
         "Gagal Mengajukan",
         err instanceof Error ? err.message : "Silakan coba lagi."
@@ -120,6 +127,7 @@ export default function CustomerProfileScreen() {
   };
 
   const handleSwitchRole = (role: AppRole) => {
+    hapticLight();
     setActiveRole(role);
     router.replace(homeRouteForRole(role) as never);
   };
@@ -142,10 +150,16 @@ export default function CustomerProfileScreen() {
         subtitle={complex?.name ?? "Komplek WargaBite"}
       />
 
-      <ScrollView
+      <KeyboardAvoidingView
         className="flex-1 bg-canvas"
-        contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+        <ScrollView
+          className="flex-1 bg-canvas"
+          contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
         {/* Kartu identitas */}
         <SectionCard>
           <View className="flex-row items-center gap-3.5">
@@ -324,6 +338,7 @@ export default function CustomerProfileScreen() {
           icon={<LogOut size={16} color="#DC2626" />}
         />
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

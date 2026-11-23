@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Home, ReceiptText, User } from "lucide-react-native";
+import { hapticLight } from "../../lib/haptics";
 
 export default function CustomerTabsLayout() {
   const insets = useSafeAreaInsets();
@@ -9,6 +10,11 @@ export default function CustomerTabsLayout() {
 
   return (
     <Tabs
+      screenListeners={{
+        tabPress: () => {
+          hapticLight();
+        },
+      }}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#A63A00",

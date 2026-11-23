@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
@@ -23,9 +22,11 @@ import { PendingBanner } from "../../components/Banners";
 import { CategoryPill } from "../../components/CategoryPill";
 import { ProductCard } from "../../components/ProductCard";
 import { SearchBar } from "../../components/SearchBar";
+import { CatalogSkeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
 import { type CatalogItem, listCatalog } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
+import { hapticLight, hapticSuccess } from "../../lib/haptics";
 import { useAppStore } from "../../store/useAppStore";
 import type { ProductCategory } from "../../types/database";
 
@@ -121,11 +122,14 @@ export default function CustomerHomeScreen() {
             onPress: () => {
               clearCart();
               addToCart(payload, 1);
+              hapticSuccess();
             },
           },
         ]
       );
+      return;
     }
+    hapticSuccess();
   };
 
   const firstName = profile?.full_name?.split(" ")[0] ?? "Warga";
@@ -250,12 +254,7 @@ export default function CustomerHomeScreen() {
 
       <View className="flex-1 bg-canvas">
         {loading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#EA580C" />
-            <Text className="mt-2 text-xs text-ink-secondary">
-              Memuat menu komplek...
-            </Text>
-          </View>
+          <CatalogSkeleton />
         ) : (
           <FlatList
             data={filteredItems}
@@ -263,15 +262,19 @@ export default function CustomerHomeScreen() {
             numColumns={2}
             columnWrapperStyle={{ gap: 12, marginBottom: 12 }}
             contentContainerStyle={{ padding: 16, paddingBottom: 28 }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             ListHeaderComponent={renderHeader}
             ListFooterComponent={renderFooter}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={() => {
+                  hapticLight();
                   setRefreshing(true);
                   fetchCatalog();
                 }}
+                colors={["#EA580C"]}
                 tintColor="#EA580C"
               />
             }

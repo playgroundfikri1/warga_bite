@@ -3,6 +3,7 @@ import { Image, Pressable, Text, View } from "react-native";
 import { Lock, Plus, Utensils } from "lucide-react-native";
 import type { CatalogItem } from "../lib/api";
 import { formatRupiah } from "../lib/format";
+import { hapticLight } from "../lib/haptics";
 import { StatusChip } from "./StatusChip";
 
 interface ProductCardProps {
@@ -26,8 +27,12 @@ export function ProductCard({
 
   return (
     <Pressable
-      onPress={onPress}
-      className="flex-1 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm active:opacity-90"
+      onPress={() => {
+        hapticLight();
+        onPress();
+      }}
+      android_ripple={{ color: "rgba(234,88,12,0.1)" }}
+      className="flex-1 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm active:scale-[0.98] active:opacity-90"
     >
       <View className="relative h-32 w-full bg-field">
         {item.image_url ? (
@@ -75,12 +80,18 @@ export function ProductCard({
           <Pressable
             onPress={(e) => {
               e.stopPropagation();
-              if (canOrder) onQuickAdd();
+              if (canOrder) {
+                hapticLight();
+                onQuickAdd();
+              }
             }}
             disabled={!canOrder}
-            hitSlop={6}
-            className={`h-8 w-8 items-center justify-center rounded-full ${
-              canOrder ? "bg-cta active:bg-cta-dark" : "bg-slate-200"
+            hitSlop={8}
+            android_ripple={{ color: "rgba(255,255,255,0.28)", borderless: true }}
+            className={`h-8 w-8 items-center justify-center overflow-hidden rounded-full ${
+              canOrder
+                ? "bg-cta active:scale-90 active:bg-cta-dark"
+                : "bg-slate-200"
             }`}
           >
             {isPending ? (

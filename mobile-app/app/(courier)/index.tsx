@@ -6,6 +6,7 @@ import { ArrowLeftRight, Truck } from "lucide-react-native";
 import { AppHeader } from "../../components/AppHeader";
 import { SectionCard } from "../../components/SectionCard";
 import { useAuth } from "../../lib/auth-context";
+import { hapticLight } from "../../lib/haptics";
 import { useAppStore } from "../../store/useAppStore";
 
 export default function CourierHomeScreen() {
@@ -14,7 +15,7 @@ export default function CourierHomeScreen() {
   const setActiveRole = useAppStore((s) => s.setActiveRole);
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
       <AppHeader
         title="Tugas Kurir Komplek"
         subtitle={complex?.name ?? "Komplek WargaBite"}
@@ -22,10 +23,12 @@ export default function CourierHomeScreen() {
         rightSlot={
           <Pressable
             onPress={() => {
+              hapticLight();
               setActiveRole("customer");
               router.replace("/(customer)");
             }}
-            className="flex-row items-center gap-1.5 rounded-full bg-field px-3 py-2"
+            android_ripple={{ color: "rgba(166,58,0,0.12)" }}
+            className="flex-row items-center gap-1.5 overflow-hidden rounded-full bg-field px-3 py-2 active:scale-95"
           >
             <ArrowLeftRight size={14} color="#A63A00" />
             <Text className="text-xs font-bold text-cta">Mode Warga</Text>

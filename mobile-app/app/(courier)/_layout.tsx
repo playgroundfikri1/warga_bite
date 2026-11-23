@@ -5,7 +5,9 @@ export default function CourierLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#F8FAFC" },
+        contentStyle: { backgroundColor: "#F8FAFF" },
+        animation: "slide_from_right",
+        gestureEnabled: true,
       }}
     />
   );

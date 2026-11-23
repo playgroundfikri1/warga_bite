@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -24,9 +22,17 @@ import {
   User,
 } from "lucide-react-native";
 import { AppHeader } from "../../components/AppHeader";
+import { BottomSheetModal } from "../../components/BottomSheetModal";
 import { PrimaryButton } from "../../components/Buttons";
 import { SearchBar } from "../../components/SearchBar";
+import { ListCardSkeleton } from "../../components/Skeleton";
 import { listComplexes, registerAccount } from "../../lib/api";
+import {
+  hapticError,
+  hapticLight,
+  hapticSelection,
+  hapticSuccess,
+} from "../../lib/haptics";
 import type { Complex } from "../../types/database";
 
 export default function RegisterScreen() {
@@ -97,11 +103,13 @@ export default function RegisterScreen() {
         house_block: houseBlock.trim(),
         full_address: fullAddress.trim(),
       });
+      hapticSuccess();
       router.replace({
         pathname: "/(auth)/verify-otp",
         params: { email: trimmedEmail },
       });
     } catch (err) {
+      hapticError();
       Alert.alert(
         "Pendaftaran Gagal",
         err instanceof Error ? err.message : "Silakan coba lagi."
@@ -112,7 +120,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
       <AppHeader
         title="Daftar Warga Baru"
         subtitle="Verifikasi Email 6 Digit"
@@ -121,11 +129,12 @@ export default function RegisterScreen() {
 
       <KeyboardAvoidingView
         className="flex-1 bg-canvas"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
           contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           <View className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <Text className="text-sm font-bold text-ink">
@@ -143,8 +152,12 @@ export default function RegisterScreen() {
                   Komplek / Perumahan
                 </Text>
                 <Pressable
-                  onPress={() => setComplexModalOpen(true)}
-                  className="flex-row items-center justify-between rounded-2xl bg-field px-4 py-3.5"
+                  onPress={() => {
+                    hapticLight();
+                    setComplexModalOpen(true);
+                  }}
+                  android_ripple={{ color: "rgba(234,88,12,0.1)" }}
+                  className="flex-row items-center justify-between overflow-hidden rounded-2xl bg-field px-4 py-3.5 active:scale-[0.98]"
                 >
                   <View className="flex-1 flex-row items-center gap-2.5">
                     <Building2 size={18} color="#EA580C" />
@@ -287,60 +300,59 @@ export default function RegisterScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Modal pilih komplek */}
-      <Modal
+      {/* Bottom Sheet pilih komplek */}
+      <BottomSheetModal
         visible={complexModalOpen}
-        animationType="slide"
-        onRequestClose={() => setComplexModalOpen(false)}
+        onClose={() => setComplexModalOpen(false)}
+        title="Pilih Komplek"
+        subtitle="Cari dan pilih perumahan tempat tinggal Anda"
       >
-        <SafeAreaView className="flex-1 bg-canvas">
-          <AppHeader
-            title="Pilih Komplek"
-            onBack={() => setComplexModalOpen(false)}
+        <View className="mb-3">
+          <SearchBar
+            value={complexQuery}
+            onChangeText={setComplexQuery}
+            placeholder="Cari nama komplek..."
           />
-          <View className="p-4">
-            <SearchBar
-              value={complexQuery}
-              onChangeText={setComplexQuery}
-              placeholder="Cari nama komplek..."
-            />
-          </View>
-          {loadingComplexes ? (
-            <ActivityIndicator color="#EA580C" className="mt-8" />
-          ) : (
-            <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }}>
-              {filteredComplexes.map((item) => (
-                <Pressable
-                  key={item.id}
-                  onPress={() => {
-                    setSelectedComplex(item);
-                    setComplexModalOpen(false);
-                  }}
-                  className={`mb-2.5 rounded-2xl border p-4 ${
-                    selectedComplex?.id === item.id
-                      ? "border-cta bg-chip-peach/40"
-                      : "border-line bg-surface"
-                  }`}
-                >
-                  <Text className="text-sm font-bold text-ink">
-                    {item.name}
+        </View>
+        {loadingComplexes ? (
+          <ListCardSkeleton count={3} />
+        ) : (
+          <ScrollView
+            style={{ maxHeight: 360 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {filteredComplexes.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => {
+                  hapticSelection();
+                  setSelectedComplex(item);
+                  setComplexModalOpen(false);
+                }}
+                android_ripple={{ color: "rgba(234,88,12,0.12)" }}
+                className={`mb-2.5 overflow-hidden rounded-2xl border p-4 active:scale-[0.98] ${
+                  selectedComplex?.id === item.id
+                    ? "border-cta bg-chip-peach/40"
+                    : "border-line bg-surface"
+                }`}
+              >
+                <Text className="text-sm font-bold text-ink">{item.name}</Text>
+                {item.address ? (
+                  <Text className="mt-0.5 text-xs text-ink-secondary">
+                    {item.address}
                   </Text>
-                  {item.address ? (
-                    <Text className="mt-0.5 text-xs text-ink-secondary">
-                      {item.address}
-                    </Text>
-                  ) : null}
-                </Pressable>
-              ))}
-              {filteredComplexes.length === 0 && (
-                <Text className="mt-8 text-center text-sm text-ink-secondary">
-                  Komplek tidak ditemukan.
-                </Text>
-              )}
-            </ScrollView>
-          )}
-        </SafeAreaView>
-      </Modal>
+                ) : null}
+              </Pressable>
+            ))}
+            {filteredComplexes.length === 0 && (
+              <Text className="py-8 text-center text-sm text-ink-secondary">
+                Komplek tidak ditemukan.
+              </Text>
+            )}
+          </ScrollView>
+        )}
+      </BottomSheetModal>
     </SafeAreaView>
   );
 }

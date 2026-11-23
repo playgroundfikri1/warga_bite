@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { AlertTriangle, Clock, ShieldCheck } from "lucide-react-native";
 import type { SubscriptionView } from "../lib/api";
+import { hapticLight } from "../lib/haptics";
 
 /**
  * Banner peringatan mode browse-only untuk warga berstatus pending.
@@ -50,8 +51,12 @@ export function SubscriptionBanner({
           </Text>
           {onManagePress && (
             <Pressable
-              onPress={onManagePress}
-              className="mt-2 self-start rounded-full bg-status-danger px-3 py-1.5"
+              onPress={() => {
+                hapticLight();
+                onManagePress();
+              }}
+              android_ripple={{ color: "rgba(255,255,255,0.22)" }}
+              className="mt-2 self-start overflow-hidden rounded-full bg-status-danger px-3 py-1.5 active:scale-95"
             >
               <Text className="text-xs font-bold text-white">
                 Lihat Detail Langganan

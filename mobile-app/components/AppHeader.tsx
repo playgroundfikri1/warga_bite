@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { ArrowLeft, MapPin } from "lucide-react-native";
+import { hapticLight } from "../lib/haptics";
 
 interface AppHeaderProps {
   title: string;
@@ -25,9 +26,13 @@ export function AppHeader({
       <View className="flex-1 flex-row items-center gap-3">
         {onBack ? (
           <Pressable
-            onPress={onBack}
+            onPress={() => {
+              hapticLight();
+              onBack();
+            }}
             hitSlop={10}
-            className="h-9 w-9 items-center justify-center rounded-full bg-field active:bg-line"
+            android_ripple={{ color: "rgba(30,41,59,0.14)", borderless: true }}
+            className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-field active:scale-95 active:bg-line"
           >
             <ArrowLeft size={18} color="#1E293B" />
           </Pressable>

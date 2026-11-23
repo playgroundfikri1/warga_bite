@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MailCheck } from "lucide-react-native";
@@ -7,6 +16,7 @@ import { AppHeader } from "../../components/AppHeader";
 import { PrimaryButton } from "../../components/Buttons";
 import { resendSignupOtp, verifySignupOtp } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
+import { hapticError, hapticLight, hapticSuccess } from "../../lib/haptics";
 
 export default function VerifyOtpScreen() {
   const router = useRouter();
@@ -39,8 +49,10 @@ export default function VerifyOtpScreen() {
     try {
       await verifySignupOtp(cleanEmail, cleanOtp);
       await refreshProfile();
+      hapticSuccess();
       router.replace("/");
     } catch (err) {
+      hapticError();
       Alert.alert(
         "Verifikasi Gagal",
         err instanceof Error ? err.message : "Kode OTP salah atau kedaluwarsa."
@@ -59,8 +71,10 @@ export default function VerifyOtpScreen() {
     try {
       await resendSignupOtp(cleanEmail);
       setCooldown(60);
+      hapticSuccess();
       Alert.alert("OTP Terkirim", "Silakan periksa kotak masuk atau folder spam.");
     } catch (err) {
+      hapticError();
       Alert.alert(
         "Gagal Mengirim Ulang",
         err instanceof Error ? err.message : "Silakan coba sebentar lagi."
@@ -69,14 +83,22 @@ export default function VerifyOtpScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
       <AppHeader
         title="Verifikasi OTP Email"
         subtitle="Langkah Terakhir"
         onBack={() => router.back()}
       />
 
-      <View className="flex-1 bg-canvas px-6 pt-8">
+      <KeyboardAvoidingView
+        className="flex-1 bg-canvas"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 32 }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
         <View className="items-center rounded-3xl border border-line bg-surface p-6 shadow-sm">
           <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-chip-peach">
             <MailCheck size={30} color="#A63A00" />
@@ -119,9 +141,12 @@ export default function VerifyOtpScreen() {
           />
 
           <Pressable
-            onPress={handleResend}
+            onPress={() => {
+              hapticLight();
+              handleResend();
+            }}
             disabled={cooldown > 0}
-            className="mt-4 py-2"
+            className="mt-4 rounded-full px-3 py-2 active:scale-95 active:opacity-80"
           >
             <Text
               className={`text-xs font-bold ${
@@ -134,7 +159,8 @@ export default function VerifyOtpScreen() {
             </Text>
           </Pressable>
         </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

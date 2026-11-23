@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import { Alert, RefreshControl, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppHeader } from "../../components/AppHeader";
 import { SubscriptionBanner } from "../../components/Banners";
 import { SectionCard } from "../../components/SectionCard";
+import { ListCardSkeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
 import { getSubscriptionView, listMySubscriptions } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
 import { formatRupiah } from "../../lib/format";
+import { hapticLight } from "../../lib/haptics";
 import type { SellerSubscription } from "../../types/database";
 
 const PLAN_LABELS: Record<SellerSubscription["plan_type"], string> = {
@@ -42,7 +44,7 @@ export default function SellerSubscriptionScreen() {
   const subView = profile ? getSubscriptionView(profile) : { kind: "none" as const };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface" edges={["top", "bottom"]}>
       <AppHeader
         title="Langganan Toko"
         subtitle={profile?.shop_name ?? "Penjual WargaBite"}
@@ -52,6 +54,21 @@ export default function SellerSubscriptionScreen() {
       <ScrollView
         className="flex-1 bg-canvas"
         contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 32 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              if (!profile?.id) return;
+              hapticLight();
+              setLoading(true);
+              listMySubscriptions(profile.id)
+                .then(setRows)
+                .finally(() => setLoading(false));
+            }}
+            colors={["#EA580C"]}
+            tintColor="#EA580C"
+          />
+        }
       >
         <SubscriptionBanner view={subView} />
 
@@ -68,7 +85,7 @@ export default function SellerSubscriptionScreen() {
 
         <SectionCard title="Riwayat Paket Langganan">
           {loading ? (
-            <ActivityIndicator color="#EA580C" className="py-4" />
+            <ListCardSkeleton count={2} />
           ) : rows.length === 0 ? (
             <Text className="text-xs text-ink-secondary">
               Belum ada catatan langganan.

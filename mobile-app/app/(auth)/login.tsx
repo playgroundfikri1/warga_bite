@@ -22,6 +22,7 @@ import {
 } from "lucide-react-native";
 import { PrimaryButton } from "../../components/Buttons";
 import { useAuth } from "../../lib/auth-context";
+import { hapticError, hapticLight, hapticSuccess } from "../../lib/haptics";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (error) {
+      hapticError();
       if (error.toLowerCase().includes("email not confirmed")) {
         Alert.alert(
           "Email Belum Diverifikasi",
@@ -66,18 +68,20 @@ export default function LoginScreen() {
       return;
     }
 
+    hapticSuccess();
     router.replace("/");
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-primary" edges={["top", "bottom"]}>
       <KeyboardAvoidingView
         className="flex-1 bg-canvas"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           {/* Hero oranye bergaya WargaBite */}
           <View className="items-center bg-primary px-6 pb-14 pt-8">
@@ -145,8 +149,12 @@ export default function LoginScreen() {
                     className="ml-3 flex-1 text-sm text-ink"
                   />
                   <Pressable
-                    onPress={() => setShowPassword((prev) => !prev)}
+                    onPress={() => {
+                      hapticLight();
+                      setShowPassword((prev) => !prev);
+                    }}
                     hitSlop={8}
+                    className="active:scale-90 active:opacity-75"
                   >
                     {showPassword ? (
                       <EyeOff size={18} color="#64748B" />
@@ -170,7 +178,13 @@ export default function LoginScreen() {
               <Text className="text-xs text-ink-secondary">
                 Warga baru di komplek ini?
               </Text>
-              <Pressable onPress={() => router.push("/(auth)/register")}>
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  router.push("/(auth)/register");
+                }}
+                className="rounded-md px-1.5 py-0.5 active:scale-95 active:opacity-80"
+              >
                 <Text className="text-xs font-bold text-cta">
                   Daftar Sekarang
                 </Text>

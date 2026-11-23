@@ -1,5 +1,6 @@
 import React from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { hapticLight } from "../lib/haptics";
 
 interface ButtonProps {
   title: string;
@@ -24,10 +25,16 @@ export function PrimaryButton({
   const isDisabled = disabled || loading;
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => {
+        hapticLight();
+        onPress();
+      }}
       disabled={isDisabled}
-      className={`flex-row items-center justify-center rounded-full px-5 py-3.5 ${
-        isDisabled ? "bg-status-muted/60" : "bg-cta active:bg-cta-dark"
+      android_ripple={{ color: "rgba(255,255,255,0.22)" }}
+      className={`flex-row items-center justify-center overflow-hidden rounded-full px-5 py-3.5 ${
+        isDisabled
+          ? "bg-status-muted/60"
+          : "bg-cta active:scale-[0.98] active:bg-cta-dark"
       } ${className}`}
     >
       {loading ? (
@@ -57,14 +64,18 @@ export function SecondaryButton({
   const isDisabled = disabled || loading;
   const baseStyle =
     variant === "outline"
-      ? "border border-line bg-surface active:bg-field"
-      : "bg-field active:bg-line";
+      ? "border border-line bg-surface active:scale-[0.98] active:bg-field"
+      : "bg-field active:scale-[0.98] active:bg-line";
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => {
+        hapticLight();
+        onPress();
+      }}
       disabled={isDisabled}
-      className={`flex-row items-center justify-center rounded-full px-4 py-3 ${
+      android_ripple={{ color: "rgba(166,58,0,0.12)" }}
+      className={`flex-row items-center justify-center overflow-hidden rounded-full px-4 py-3 ${
         isDisabled ? "opacity-50" : baseStyle
       } ${className}`}
     >
