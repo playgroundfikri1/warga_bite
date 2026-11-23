@@ -5,7 +5,7 @@ export default function AdminLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#F8FAFC" },
+        contentStyle: { backgroundColor: "#F8FAFF" },
       }}
     />
   );
